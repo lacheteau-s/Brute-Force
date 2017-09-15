@@ -1,8 +1,16 @@
-SRC			=	src/main.c
+NAME		=	pwdgen
+
+SRC			=	src/tools/output.c	\
+				src/tools/strings.c	\
+				src/tools/utils.c	\
+				src/opts.c			\
+				src/main.c
 
 OBJ			=	$(SRC:.c=.o)
 
-NAME		=	pwdgen
+INCLUDES	=	-I ./headers
+
+CFLAGS		=	-Wall -Wextra -Werror $(INCLUDES)
 
 all:		$(NAME)
 
@@ -13,6 +21,6 @@ clean:
 			rm -f $(OBJ)
 
 fclean:		clean
-			rm -rf $(NAME)
+			rm -f $(NAME)
 
 re:			fclean all
