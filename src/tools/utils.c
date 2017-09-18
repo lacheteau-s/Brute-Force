@@ -20,6 +20,15 @@ int int_array_contains(int needle, int haystack[], int len)
     return 0;
 }
 
+int index_of_char(char needle, char *haystack)
+{
+    int i = -1;
+
+    while (haystack[++i] && (haystack[i] != needle));
+
+    return i;
+}
+
 int index_of_str(char *needle, char **haystack)
 {
     int i = -1;

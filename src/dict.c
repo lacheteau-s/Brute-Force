@@ -5,6 +5,7 @@
 #include "headers.h"
 #include "strings.h"
 #include "output.h"
+#include "utils.h"
 #include "dict.h"
 
 void    write_dictionary(t_params *params)
@@ -20,13 +21,15 @@ void    write_dictionary_rec(int fd, char *pwd, int length, t_params *params)
 {
     if (length == 0)
     {
-        write_str(pwd, fd);
-        write_char('\n', fd);
+        write_entry(fd, pwd, params);
         return;
     }
 
     for (int i = 0; i < str_len(params->set); ++i)
     {
+        if (params->last_entry)
+            i = index_of_char(params->last_entry[params->length - length], params->set);
+
         char *str = malloc(str_len(pwd) + 2);
         int j = -1;
 
@@ -38,4 +41,19 @@ void    write_dictionary_rec(int fd, char *pwd, int length, t_params *params)
         write_dictionary_rec(fd, str, length - 1, params);
         free(str);
     }
+}
+
+void    write_entry(int fd, char *pwd, t_params *params)
+{
+    if (params->last_entry)
+    {
+        free(params->last_entry);
+        params->last_entry = NULL;
+        return;
+    }
+
+    write_str(pwd, fd);
+    write_char('\n', fd);
+
+    return;
 }
