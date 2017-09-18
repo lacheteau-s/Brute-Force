@@ -4,6 +4,7 @@ SRC			=	src/tools/output.c	\
 				src/tools/strings.c	\
 				src/tools/utils.c	\
 				src/opts.c			\
+				src/dict.c			\
 				src/main.c
 
 OBJ			=	$(SRC:.c=.o)
