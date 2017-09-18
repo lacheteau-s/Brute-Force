@@ -1,13 +1,19 @@
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "headers.h"
 #include "strings.h"
-#include "write.h"
+#include "output.h"
 #include "dict.h"
 
 void    write_dictionary(t_params *params)
 {
-    write_dictionary_rec(0, "", params->length, params);
+    int fd = open(params->file, O_WRONLY | O_APPEND | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
+
+    write_dictionary_rec(fd, "", params->length, params);
+
+    close(fd);
 }
 
 void    write_dictionary_rec(int fd, char *pwd, int length, t_params *params)

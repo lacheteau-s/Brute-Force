@@ -71,7 +71,7 @@ int         validate_opts_count(t_opts *opts)
 {
     if (opts->ac < 6 || opts->ac > 8 || opts->ac == 7)
     {
-        write_str("Invalid number of arguments.\n");
+        write_str("Invalid number of arguments.\n", 1);
         return -1;
     }
     return 0;
@@ -100,7 +100,7 @@ int         validate_length_opt(t_opts *opts)
 {
     if (!str_is_digits(opts->av[opts->args_idx[OPT_L]]))
     {
-        write_str("Argument for option -l must be a whole number.\n");
+        write_str("Argument for option -l must be a whole number.\n", 1);
         return -1;
     }
 
