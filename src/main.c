@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "headers.h"
+#include "dict.h"
 #include "opts.h"
 
 int main(int ac, char **av)
@@ -9,7 +10,8 @@ int main(int ac, char **av)
 
     if (!(params = check_opts(ac - 1, av + 1)))
         exit(-1);
-    
+
+    write_dictionary(params);
     free_params(params);
 
     exit(0);
