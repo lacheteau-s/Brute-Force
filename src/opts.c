@@ -1,16 +1,17 @@
 #include <stdlib.h>
 
+#include "headers.h"
 #include "strings.h"
 #include "output.h"
 #include "utils.h"
 #include "opts.h"
 
-int     check_opts(int ac, char **av)
+t_params     *check_opts(int ac, char **av)
 {
-    t_opts  *opts = init_opts(ac, av);
+    t_opts      *opts = init_opts(ac, av);
 
     if (opts == NULL)
-        return -1;
+        return NULL;
     
     int state = OPTS_COUNT;
     int (*func[])(t_opts *) =
@@ -27,16 +28,19 @@ int     check_opts(int ac, char **av)
         if (func[state](opts) < 0)
         {
             free_opts(opts, state);
-            return -1;
+            return NULL;
         }
 
         ++state;
     }
 
-    return 0;
+    t_params *params = init_params(opts);
+    free_opts(opts, state);
+
+    return params;
 }
 
-t_opts  *init_opts(int ac, char **av)
+t_opts      *init_opts(int ac, char **av)
 {
     char    options[MAX_OPTS][OPT_LEN + 1] = { "-s", "-l", "-f", "-e" };
     t_opts  *opts = malloc(sizeof(t_opts)); // TODO: Error handling
@@ -46,15 +50,24 @@ t_opts  *init_opts(int ac, char **av)
     opts->opts = malloc(MAX_OPTS * sizeof(char *)); // TODO: Error handling
 
     for (int i = 0; i < MAX_OPTS; ++i)
-    {
-        opts->opts[i] = malloc(OPT_LEN + 1); // TODO: Erro handling
-        opts->opts[i] = str_cpy(opts->opts[i], options[i]);
-    }
+        opts->opts[i] = str_dup(options[i]);
 
     return opts;
 }
 
-int     validate_opts_count(t_opts *opts)
+t_params    *init_params(t_opts *opts)
+{
+    t_params    *params = malloc(sizeof(t_params)); // TODO: Error handling
+
+    params->set = str_dup(opts->av[opts->args_idx[OPT_S]]);
+    params->length = str_to_int(opts->av[opts->args_idx[OPT_L]]);
+    params->file = str_dup(opts->av[opts->args_idx[OPT_F]]);
+    params->last_entry = (opts->opts_idx[OPT_E] < 0) ? NULL : str_dup(opts->av[opts->args_idx[OPT_E]]);
+
+    return params;
+}
+
+int         validate_opts_count(t_opts *opts)
 {
     if (opts->ac < 6 || opts->ac > 8 || opts->ac == 7)
     {
@@ -64,7 +77,7 @@ int     validate_opts_count(t_opts *opts)
     return 0;
 }
 
-int     validate_opts(t_opts *opts)
+int         validate_opts(t_opts *opts)
 {
     for (int idx = 0; idx < MAX_OPTS; ++idx)
     {
@@ -83,7 +96,7 @@ int     validate_opts(t_opts *opts)
     return 0;
 }
 
-int     validate_length_opt(t_opts *opts)
+int         validate_length_opt(t_opts *opts)
 {
     if (!str_is_digits(opts->av[opts->args_idx[OPT_L]]))
     {
@@ -94,7 +107,7 @@ int     validate_length_opt(t_opts *opts)
     return 0;
 }
 
-int     set_opts_idx(t_opts *opts)
+int         set_opts_idx(t_opts *opts)
 {
     opts->opts_idx = malloc(MAX_OPTS * sizeof(int));
 
@@ -103,7 +116,7 @@ int     set_opts_idx(t_opts *opts)
     return 0;
 }
 
-int     set_args_idx(t_opts *opts)
+int         set_args_idx(t_opts *opts)
 {
     opts->args_idx = malloc(MAX_OPTS * sizeof(int));
 
@@ -115,7 +128,7 @@ int     set_args_idx(t_opts *opts)
     return 0;
 }
 
-void    free_opts(t_opts *opts, int state)
+void        free_opts(t_opts *opts, int state)
 {
     for (int i = 0; i < MAX_OPTS; ++i)
     {

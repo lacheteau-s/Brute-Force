@@ -29,3 +29,19 @@ int index_of_str(char *needle, char **haystack)
             return i;            
     return -1;
 }
+
+int str_to_int(char *str)
+{
+    int ret = 0;
+    int i = -1;
+
+    while (str[++i])
+    {
+        ret += str[i] - '0';
+
+        if (str[i + 1])
+            ret *= 10;
+    }
+
+    return ret;
+}

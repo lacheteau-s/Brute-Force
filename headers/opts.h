@@ -29,13 +29,14 @@ enum state
     END
 };
 
-int     check_opts(int, char **);
-t_opts  *init_opts(int, char **);
-int     validate_opts_count(t_opts *);
-int     validate_opts(t_opts *);
-int     validate_length_opt(t_opts *);
-int     set_opts_idx(t_opts *);
-int     set_args_idx(t_opts *);
-void    free_opts(t_opts *, int);
+t_params    *check_opts(int, char **);
+t_opts      *init_opts(int, char **);
+t_params    *init_params(t_opts *);
+int         validate_opts_count(t_opts *);
+int         validate_opts(t_opts *);
+int         validate_length_opt(t_opts *);
+int         set_opts_idx(t_opts *);
+int         set_args_idx(t_opts *);
+void        free_opts(t_opts *, int);
 
 #endif
