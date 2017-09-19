@@ -22,6 +22,9 @@ void    free_params(t_params *params)
     free(params->set);
     params->set = NULL;
 
+    free(params->path);
+    params->path = NULL;
+
     free(params->file);
     params->file = NULL;
 

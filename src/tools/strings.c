@@ -48,3 +48,22 @@ int     str_len(char *src)
 
     return i;
 }
+
+char    *str_cat(char *s1, char *s2)
+{
+    char *ret = malloc(str_len(s1) + str_len(s2) + 1);
+
+    int i = -1;
+
+    while (s1[++i])
+        ret[i] = s1[i];
+
+    int j = -1;
+
+    while (s2[++j])
+        ret[i++] = s2[j];
+
+    ret[i] = '\0';
+
+    return ret;
+}

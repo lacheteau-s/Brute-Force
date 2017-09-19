@@ -21,6 +21,8 @@ void    write_dictionary_rec(int fd, char *pwd, int length, t_params *params)
 {
     if (length == 0)
     {
+        if (params->max_entries == 0)
+            fd = create_new_file(fd, params);
         write_entry(fd, pwd, params);
         return;
     }
@@ -54,6 +56,22 @@ void    write_entry(int fd, char *pwd, t_params *params)
 
     write_str(pwd, fd);
     write_char('\n', fd);
+    --params->max_entries;    
 
     return;
+}
+
+int    create_new_file(int fd, t_params *params)
+{
+    ++params->version;
+
+    free(params->file);
+    params->file = str_cat(params->path, int_to_str(params->version));
+    
+    close(fd);
+    fd = open(params->file, O_WRONLY | O_APPEND | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
+
+    params->max_entries = get_max_entries(params);
+
+    return fd;
 }
