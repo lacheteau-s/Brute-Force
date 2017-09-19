@@ -20,7 +20,7 @@ t_params     *check_opts(int ac, char **av)
         set_opts_idx,
         set_args_idx,
         validate_opts,
-        validate_length_opt
+        validate_numeric_opts,
     };
 
     while (state < END)
@@ -42,7 +42,7 @@ t_params     *check_opts(int ac, char **av)
 
 t_opts      *init_opts(int ac, char **av)
 {
-    char    options[MAX_OPTS][OPT_LEN + 1] = { "-s", "-l", "-f", "-e" };
+    char    options[MAX_OPTS][OPT_LEN + 1] = { "-s", "-l", "-f", "-r", "-v" };
     t_opts  *opts = malloc(sizeof(t_opts)); // TODO: Error handling
 
     opts->ac = ac;
@@ -61,15 +61,18 @@ t_params    *init_params(t_opts *opts)
 
     params->set = str_dup(opts->av[opts->args_idx[OPT_S]]);
     params->length = str_to_int(opts->av[opts->args_idx[OPT_L]]);
-    params->file = str_dup(opts->av[opts->args_idx[OPT_F]]);
-    params->last_entry = (opts->opts_idx[OPT_E] < 0) ? NULL : str_dup(opts->av[opts->args_idx[OPT_E]]);
+    params->path = str_dup(opts->av[opts->args_idx[OPT_F]]);
+    params->version = (opts->opts_idx[OPT_V] < 0) ? 0 : str_to_int(opts->av[opts->args_idx[OPT_V]]);
+    params->file = (params->version == 0) ? str_dup(params->path) : str_cat(params->path, opts->av[opts->args_idx[OPT_V]]);
+    params->last_entry = (opts->opts_idx[OPT_R] < 0) ? NULL : str_dup(opts->av[opts->args_idx[OPT_R]]);
+    params->max_entries = get_max_entries(params);
 
     return params;
 }
 
 int         validate_opts_count(t_opts *opts)
 {
-    if (opts->ac < 6 || opts->ac > 8 || opts->ac == 7)
+    if (opts->ac < 6 || opts->ac > 10 || (opts->ac % 2))
     {
         write_str("Invalid number of arguments.\n", 1);
         return -1;
@@ -81,7 +84,7 @@ int         validate_opts(t_opts *opts)
 {
     for (int idx = 0; idx < MAX_OPTS; ++idx)
     {
-        if ((opts->opts_idx[idx] < 0) && (idx != OPT_E)) // Checks if mandatory options are provided
+        if ((opts->opts_idx[idx] < 0) && (idx != OPT_R) && (idx != OPT_V)) // Checks if mandatory options are provided
         {
             write_line("Missing option %s.\n", opts->opts[idx]);
             return -1;
@@ -96,11 +99,16 @@ int         validate_opts(t_opts *opts)
     return 0;
 }
 
-int         validate_length_opt(t_opts *opts)
+int         validate_numeric_opts(t_opts *opts)
 {
     if (!str_is_digits(opts->av[opts->args_idx[OPT_L]]))
     {
         write_str("Argument for option -l must be a whole number.\n", 1);
+        return -1;
+    }
+    else if ((opts->opts_idx[OPT_V] > -1) && !str_is_digits(opts->av[opts->args_idx[OPT_V]]))
+    {
+        write_str("Argument for option -v must be a whole number.\n", 1);
         return -1;
     }
 
