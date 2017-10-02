@@ -27,10 +27,22 @@ void    write_dictionary_rec(int fd, char *pwd, int length, t_params *params)
         return;
     }
 
-    for (int i = 0; i < str_len(params->set); ++i)
+    int len = str_len(params->set);
+
+    for (int i = 0; i < len; ++i)
     {
         if (params->last_entry)
             i = index_of_char(params->last_entry[params->length - length], params->set);
+
+        if ((length < params->length))
+        {
+            if (params->set[i] == pwd[params->length - length - 1])
+            {
+                ++i;
+                if (i == len)
+                    return;
+            }
+        }
 
         char *str = malloc(str_len(pwd) + 2);
         int j = -1;
